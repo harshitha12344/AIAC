@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confidence Booster Pro</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #e0f2fe, #fef9c3);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      transition: background 1s ease;
+    }
+
+    header {
+      background: linear-gradient(90deg, #0284c7, #0ea5e9);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      flex-wrap: wrap;
+    }
+
+    header h1 { margin: 0; font-size: 1.8rem; letter-spacing: 1px; }
+
+    .progress {
+      background: white;
+      border-radius: 20px;
+      width: 180px;
+      height: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #06b6d4, #22d3ee, #67e8f9);
+      height: 100%;
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: scale(1.01); }
+    h2 { color: #0c4a6e; margin-top: 0; }
+
+    button {
+      background: linear-gradient(90deg, #0284c7, #38bdf8);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin: 5px;
+    }
+    button:hover { background: linear-gradient(90deg, #0369a1, #0ea5e9); transform: scale(1.05); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-secondary { background: linear-gradient(90deg, #64748b, #94a3b8); }
+    .btn-secondary:hover { background: linear-gradient(90deg, #475569, #64748b); }
+    .btn-danger { background: linear-gradient(90deg, #dc2626, #ef4444); }
+    .btn-danger:hover { background: linear-gradient(90deg, #b91c1c, #dc2626); }
+
+    input, textarea, select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      padding: 10px;
+      margin-top: 10px;
+      font-family: inherit;
+    }
+
+    textarea { resize: vertical; }
+
+    .challenge {
+      background: #f0f9ff;
+      border-left: 4px solid #0284c7;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .challenge.completed {
+      background: #f0fdf4;
+      border-left-color: #22c55e;
+      opacity: 0.7;
+    }
+
+    .badge {
+      background: #cffafe;
+      padding: 8px 14px;
+      border-radius: 20px;
+      margin: 5px;
+      display: inline-block;
+      font-size: 14px;
+      color: #0369a1;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .badge:hover { transform: scale(1.1); }
+
+    .journal-entry {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 8px;
+      font-size: 14px;
+      position: relative;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .journal-entry .date {
+      color: #64748b;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+    }
+
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: white;
+      padding: 20px 30px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 999;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    #popup.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .emoji {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      animation: bounce 0.8s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0px); }
+      to { transform: translateY(-6px); }
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .stat-box h3 { margin: 0; font-size: 2rem; }
+    .stat-box p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.9; }
+
+    .mood-selector {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mood-btn {
+      font-size: 2rem;
+      background: #f1f5f9;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mood-btn:hover, .mood-btn.selected {
+      transform: scale(1.15);
+      border-color: #0284c7;
+    }
+
+    .goal-item {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .goal-item.completed {
+      background: #d1fae5;
+      border-left-color: #10b981;
+      text-decoration: line-through;
+      opacity: 0.8;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: #64748b;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin: 0;
+      border-radius: 0;
+    }
+
+    .tab-btn:hover { color: #0284c7; }
+    .tab-btn.active {
+      color: #0284c7;
+      border-bottom-color: #0284c7;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .streak-display {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .affirmation-box {
+      background: linear-gradient(135deg, #f0abfc, #e879f9);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>💪 Confidence Booster Pro</h1>
+    <div>
+      Level: <span id="level">1</span> |
+      XP: <span id="xp">0</span> / <span id="xpNeeded">100</span>
+      <div class="progress"><div class="progress-bar" id="xpBar"></div></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Stats Dashboard -->
+    <div class="card">
+      <h2>📊 Your Stats</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h3 id="totalChallenges">0</h3>
+          <p>Challenges Completed</p>
+        </div>
+        <div class="stat-box">
+          <h3 id="totalJournals">0</h3>
+          <p>Journal Entries</p>
+        </div>
+        <div class="stat-box">
+          <h3 id="totalGoals">0</h3>
+          <p>Goals Achieved</p>
+        </div>
+        <div class="stat-box">
+          <h3 id="daysActive">0</h3>
+          <p>Days Active</p>
+        </div>
+      </div>
+      <div class="streak-display">
+        🔥 Current Streak: <span id="streak">0</span> Days
+      </div>
+    </div>
+
+    <!-- Daily Check-in -->
+    <div class="card">
+      <h2>😊 Daily Check-in</h2>
+      <p>How are you feeling today?</p>
+      <div class="mood-selector">
+        <button class="mood-btn" onclick="selectMood('😢', 'sad')" data-mood="sad">😢</button>
+        <button class="mood-btn" onclick="selectMood('😐', 'neutral')" data-mood="neutral">😐</button>
+        <button class="mood-btn" onclick="selectMood('🙂', 'good')" data-mood="good">🙂</button>
+        <button class="mood-btn" onclick="selectMood('😊', 'great')" data-mood="great">😊</button>
+        <button class="mood-btn" onclick="selectMood('🤩', 'amazing')" data-mood="amazing">🤩</button>
+      </div>
+      <div class="affirmation-box" id="affirmation">Your daily affirmation will appear here</div>
+    </div>
+
+    <!-- Tip Section -->
+    <div class="card">
+      <h2>✨ Today's Motivation</h2>
+      <p id="tip">Loading inspiration...</p>
+      <button onclick="newTip()">New Tip</button>
+      <button class="btn-secondary" onclick="shareTip()">Share 📤</button>
+    </div>
+
+    <!-- Challenges -->
+    <div class="card">
+      <h2>🎯 Confidence Challenges</h2>
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('available')">Available</button>
+        <button class="tab-btn" onclick="switchTab('completed')">Completed</button>
+        <button class="tab-btn" onclick="switchTab('custom')">Create Custom</button>
+      </div>
+      
+      <div id="available" class="tab-content active">
+        <div id="challenges"></div>
+      </div>
+      
+      <div id="completed" class="tab-content">
+        <div id="completedChallenges"></div>
+      </div>
+      
+      <div id="custom" class="tab-content">
+        <input type="text" id="customChallengeTitle" placeholder="Challenge title..." />
+        <input type="number" id="customChallengeXP" placeholder="XP reward (10-50)" min="10" max="50" />
+        <button onclick="addCustomChallenge()">Add Challenge</button>
+      </div>
+    </div>
+
+    <!-- Goals Section -->
+    <div class="card">
+      <h2>🎯 Personal Goals</h2>
+      <input type="text" id="goalInput" placeholder="Set a new goal..." />
+      <button onclick="addGoal()">Add Goal</button>
+      <div id="goalsList"></div>
+    </div>
+
+    <!-- Journal -->
+    <div class="card">
+      <h2>📝 Confidence Journal</h2>
+      <textarea id="journalInput" rows="4" placeholder="Write your thoughts, achievements, or reflections..."></textarea>
+      <select id="journalCategory">
+        <option value="general">General</option>
+        <option value="achievement">Achievement</option>
+        <option value="challenge">Challenge Faced</option>
+        <option value="gratitude">Gratitude</option>
+        <option value="reflection">Reflection</option>
+      </select>
+      <button onclick="saveJournal()">Save Entry</button>
+      <button class="btn-secondary" onclick="exportJournal()">Export All 📥</button>
+      <div id="journalList"></div>
+    </div>
+
+    <!-- Mentor -->
+    <div class="card">
+      <h2>🤝 Find a Mentor</h2>
+      <select id="mentorCategory">
+        <option value="">All Categories</option>
+        <option value="speaking">Public Speaking</option>
+        <option value="academic">Academic</option>
+        <option value="career">Career</option>
+        <option value="social">Social Skills</option>
+      </select>
+      <button onclick="matchMentor()">Match Me!</button>
+      <div id="mentorResult" style="margin-top:15px;"></div>
+    </div>
+
+    <!-- Badges -->
+    <div class="card">
+      <h2>🏅 Your Achievements</h2>
+      <div id="badges"></div>
+      <button class="btn-secondary" onclick="resetProgress()">Reset All Progress</button>
+    </div>
+  </div>
+
+  <div id="popup">
+    <div class="emoji">🌟</div>
+    <div id="popupMsg">You did great!</div>
+  </div>
+
+  <script>
+    const tips = [
+      "Believe in progress, not perfection 💫",
+      "Small steps every day make a big difference 🌱",
+      "Be proud of how far you've come 🚀",
+      "Confidence is a muscle — train it daily 💪",
+      "You are capable of amazing things 🌟",
+      "Turn your 'I can't' into 'I will' 🔥",
+      "Remember: failure means you're trying 🙌",
+      "Don't compare your start to someone's peak 🧗‍♀️",
+      "Confidence grows with every action you take 💥",
+      "Your potential is limitless 🌈",
+      "Embrace challenges as opportunities 🎯",
+      "Self-belief is your superpower 💎"
+    ];
+
+    const affirmations = [
+      "I am worthy of success and happiness",
+      "I trust my abilities and judgment",
+      "I am growing stronger every day",
+      "I choose to be confident and capable",
+      "I am proud of my progress",
+      "I embrace my unique strengths",
+      "I am deserving of good things",
+      "I face challenges with courage"
+    ];
+
+    const challengeDatabase = [
+      { title: "Speak for 1 min on a random topic", xp: 20, category: "speaking" },
+      { title: "Compliment 3 different people today", xp: 15, category: "social" },
+      { title: "Write 5 strengths about yourself", xp: 15, category: "reflection" },
+      { title: "Share your opinion in a group discussion", xp: 25, category: "speaking" },
+      { title: "Teach someone something new", xp: 30, category: "academic" },
+      { title: "Ask a question in class or meeting", xp: 20, category: "speaking" },
+      { title: "Try something outside your comfort zone", xp: 35, category: "personal" },
+      { title: "Make eye contact during conversations today", xp: 15, category: "social" },
+      { title: "Present an idea to your group", xp: 30, category: "speaking" },
+      { title: "Start a conversation with a stranger", xp: 25, category: "social" },
+      { title: "Practice power posing for 2 minutes", xp: 10, category: "personal" },
+      { title: "Write a thank you note to someone", xp: 15, category: "gratitude" },
+      { title: "Stand up for your opinion respectfully", xp: 30, category: "speaking" },
+      { title: "Volunteer to lead a small task", xp: 25, category: "leadership" },
+      { title: "Share a personal story with others", xp: 20, category: "social" }
+    ];
+
+    const mentorDatabase = [
+      { name: "Aisha", year: "Final Year CS", specialty: "Public Speaking Pro", category: "speaking", emoji: "🎤" },
+      { name: "Ravi", year: "EE 3rd Year", specialty: "Presentation Mentor", category: "speaking", emoji: "⚡" },
+      { name: "Sara", year: "Math 2nd Year", specialty: "Study Buddy", category: "academic", emoji: "📚" },
+      { name: "Vikram", year: "MBA 2nd Year", specialty: "Confidence Coach", category: "career", emoji: "💼" },
+      { name: "Nina", year: "Psychology 4th Year", specialty: "Motivation Expert", category: "social", emoji: "💬" },
+      { name: "Kiran", year: "Final Year MBA", specialty: "Leadership Mentor", category: "career", emoji: "👔" },
+      { name: "Priya", year: "Engineering 3rd Year", specialty: "Social Skills Coach", category: "social", emoji: "🤝" },
+      { name: "Arjun", year: "CS 4th Year", specialty: "Tech Interview Prep", category: "career", emoji: "💻" },
+      { name: "Meera", year: "Arts 2nd Year", specialty: "Creative Expression", category: "speaking", emoji: "🎨" }
+    ];
+
+    let data = {
+      xp: 0,
+      level: 1,
+      badges: [],
+      journalEntries: [],
+      challenges: [...challengeDatabase],
+      completedChallenges: [],
+      customChallenges: [],
+      goals: [],
+      stats: {
+        totalChallenges: 0,
+        totalJournals: 0,
+        totalGoals: 0,
+        daysActive: 0
+      },
+      streak: 0,
+      lastActive: null,
+      mood: {}
+    };
+
+    function loadData() {
+      const saved = localStorage.getItem("confidenceBoosterData");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        data = { ...data, ...parsed };
+        if (!data.challenges || data.challenges.length === 0) {
+          data.challenges = [...challengeDatabase];
+        }
+      }
+      updateStreak();
+    }
+
+    function saveData() {
+      data.lastActive = new Date().toISOString();
+      localStorage.setItem("confidenceBoosterData", JSON.stringify(data));
+    }
+
+    function updateStreak() {
+      const today = new Date().toDateString();
+      const lastActive = data.lastActive ? new Date(data.lastActive).toDateString() : null;
+      
+      if (lastActive === today) {
+        return;
+      }
+      
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toDateString();
+      
+      if (lastActive === yesterdayStr) {
+        data.streak++;
+      } else if (lastActive !== today) {
+        data.streak = 1;
+      }
+      
+      data.stats.daysActive++;
+      saveData();
+    }
+
+    function newTip() {
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      document.getElementById("tip").textContent = randomTip;
+    }
+
+    function shareTip() {
+      const tip = document.getElementById("tip").textContent;
+      if (navigator.share) {
+        navigator.share({ title: "Confidence Tip", text: tip });
+      } else {
+        navigator.clipboard.writeText(tip);
+        showPopup("Tip copied to clipboard! 📋");
+      }
+    }
+
+    function loadChallenges() {
+      const div = document.getElementById("challenges");
+      div.innerHTML = "";
+      const allChallenges = [...data.challenges, ...data.customChallenges];
+      
+      if (allChallenges.length === 0) {
+        div.innerHTML = "<p>No challenges available. Create a custom one!</p>";
+        return;
+      }
+      
+      allChallenges.forEach((ch, i) => {
+        const el = document.createElement("div");
+        el.className = "challenge";
+        el.innerHTML = `<div>${ch.title} <b>(${ch.xp} XP)</b></div>
+                        <button onclick="completeChallenge(${i})">Complete ✅</button>`;
+        div.appendChild(el);
+      });
+    }
+
+    function loadCompletedChallenges() {
+      const div = document.getElementById("completedChallenges");
+      div.innerHTML = "";
+      
+      if (data.completedChallenges.length === 0) {
+        div.innerHTML = "<p>No completed challenges yet. Start completing some!</p>";
+        return;
+      }
+      
+      data.completedChallenges.forEach(ch => {
+        const el = document.createElement("div");
+        el.className = "challenge completed";
+        el.innerHTML = `<div>${ch.title} <b>(${ch.xp} XP)</b></div>
+                        <span>✅ Completed</span>`;
+        div.appendChild(el);
+      });
+    }
+
+    function completeChallenge(i) {
+      const allChallenges = [...data.challenges, ...data.customChallenges];
+      const challenge = allChallenges[i];
+      
+      data.xp += challenge.xp;
+      data.completedChallenges.push({ ...challenge, completedAt: new Date().toISOString() });
+      data.stats.totalChallenges++;
+      
+      if (i < data.challenges.length) {
+        data.challenges.splice(i, 1);
+      } else {
+        data.customChallenges.splice(i - data.challenges.length, 1);
+      }
+      
+      showPopup(`Great job! You earned ${challenge.xp} XP 🎉`);
+      checkBadges();
+      loadChallenges();
+      loadCompletedChallenges();
+      updateProgress();
+      updateStats();
+      saveData();
+    }
+
+    function addCustomChallenge() {
+      const title = document.getElementById("customChallengeTitle").value.trim();
+      const xp = parseInt(document.getElementById("customChallengeXP").value) || 20;
+      
+      if (!title) {
+        showPopup("Please enter a challenge title! 📝");
+        return;
+      }
+      
+      data.customChallenges.push({ title, xp: Math.min(50, Math.max(10, xp)), category: "custom" });
+      document.getElementById("customChallengeTitle").value = "";
+      document.getElementById("customChallengeXP").value = "";
+      
+      showPopup("Custom challenge added! 🎯");
+      loadChallenges();
+      saveData();
+    }
+
+    function showPopup(msg) {
+      const popup = document.getElementById("popup");
+      document.getElementById("popupMsg").textContent = msg;
+      popup.classList.add("show");
+      setTimeout(() => popup.classList.remove("show"), 2500);
+    }
+
+    function updateProgress() {
+      const xpNeeded = data.level * 100;
+      document.getElementById("xp").textContent = data.xp;
+      document.getElementById("xpNeeded").textContent = xpNeeded;
+      
+      const newLevel = Math.floor(data.xp / 100) + 1;
+      if (newLevel > data.level) {
+        data.level = newLevel;
+        showPopup(`🎊 Level Up! You're now Level ${data.level}!`);
+        const badge = `Level ${data.level} Achiever 🏆`;
+        if (!data.badges.includes(badge)) data.badges.push(badge);
+      }
+      
+      document.getElementById("level").textContent = data.level;
+      document.getElementById("xpBar").style.width = ((data.xp % 100)) + "%";
+      
+      renderBadges();
+    }
+
+    function checkBadges() {
+      const badges = [
+        { condition: data.stats.totalChallenges >= 5, badge: "Challenge Master 🌟" },
+        { condition: data.stats.totalChallenges >= 10, badge: "Challenge Champion 🏆" },
+        { condition: data.stats.totalJournals >= 10, badge: "Journaling Pro 📖" },
+        { condition: data.stats.totalGoals >= 5, badge: "Goal Getter 🎯" },
+        { condition: data.streak >= 7, badge: "Week Warrior 🔥" },
+        { condition: data.streak >= 30, badge: "Month Master 📅" },
+        { condition: data.xp >= 500, badge: "XP Legend ⚡" }
+      ];
+      
+      badges.forEach(b => {
+        if (b.condition && !data.badges.includes(b.badge)) {
+          data.badges.push(b.badge);
+          showPopup(`New Badge Unlocked: ${b.badge}`);
+        }
+      });
+    }
+
+    function renderBadges() {
+      const div = document.getElementById("badges");
+      div.innerHTML = data.badges.length > 0 
+        ? data.badges.map(b => `<span class="badge">${b}</span>`).join("")
+        : "<p>No badges yet. Complete challenges to earn badges!</p>";
+    }
+
+    function saveJournal() {
+      const text = document.getElementById("journalInput").value.trim();
+      const category = document.getElementById("journalCategory").value;
+      
+      if (!text) return showPopup("Please write something 🖊️");
+      
+      data.journalEntries.unshift({ 
+        text, 
+        category,
+        date: new Date().toISOString()
+      });
+      data.stats.totalJournals++;
+      data.xp += 5;
+      
+      saveData();
+      document.getElementById("journalInput").value = "";
+      renderJournal();
+      updateProgress();
+      updateStats();
+      showPopup("📝 Entry saved! +5 XP");
+    }
+
+    function deleteJournal(index) {
+      if (confirm("Delete this journal entry?")) {
+        data.journalEntries.splice(index, 1);
+        data.stats.totalJournals = Math.max(0, data.stats.totalJournals - 1);
+        saveData();
+        renderJournal();
+        updateStats();
+        showPopup("Entry deleted");
+      }
+    }
+
+    function renderJournal() {
+      const list = document.getElementById("journalList");
+      list.innerHTML = "";
+      
+      data.journalEntries.slice(0, 10).forEach((e, i) => {
+        const div = document.createElement("div");
+        div.className = "journal-entry";
+        const date = new Date(e.date).toLocaleString();
+        div.innerHTML = `
+          <div class="date">${date} • ${e.category}</div>
+          <div>${e.text}</div>
+          <button class="delete-btn" onclick="deleteJournal(${i})">×</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function exportJournal() {
+      if (data.journalEntries.length === 0) {
+        showPopup("No entries to export");
+        return;
+      }
+      
+      const text = data.journalEntries.map(e => {
+        return `Date: ${new Date(e.date).toLocaleString()}\nCategory: ${e.category}\n${e.text}\n\n---\n\n`;
+      }).join("");
+      
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "confidence-journal.txt";
+      a.click();
+      showPopup("Journal exported! 📥");
+    }
+
+    function matchMentor() {
+      const category = document.getElementById("mentorCategory").value;
+      let mentors = mentorDatabase;
+      
+      if (category) {
+        mentors = mentorDatabase.filter(m => m.category === category);
+      }
+      
+      if (mentors.length === 0) {
+        document.getElementById("mentorResult").innerHTML = "<p>No mentors found in this category.</p>";
+        return;
+      }
+      
+      const mentor = mentors[Math.floor(Math.random() * mentors.length)];
+      document.getElementById("mentorResult").innerHTML = `
+        <div style="background: linear-gradient(135deg, #e0f2fe, #dbeafe); padding: 15px; border-radius: 10px; border-left: 4px solid #0284c7;">
+          <h3 style="margin-top: 0;">${mentor.emoji} ${mentor.name}</h3>
+          <p><strong>${mentor.year}</strong> — ${mentor.specialty}</p>
+          <button onclick="contactMentor('${mentor.name}')">Send Message 📧</button>
+          <button class="btn-secondary" onclick="matchMentor()">Find Another</button>
+        </div>
+      `;
+      data.xp += 10;
+      updateProgress();
+      saveData();
+      showPopup("🎯 Mentor matched! +10 XP");
+    }
+
+    function contactMentor(name) {
+      showPopup(`Contact request sent to ${name}! 📨`);
+      data.xp += 5;
+      updateProgress();
+      saveData();
+    }
+
+    function addGoal() {
+      const text = document.getElementById("goalInput").value.trim();
+      if (!text) return showPopup("Please enter a goal! 🎯");
+      
+      data.goals.push({ text, completed: false, createdAt: new Date().toISOString() });
+      document.getElementById("goalInput").value = "";
+      renderGoals();
+      saveData();
+      showPopup("Goal added! 🎯");
+    }
+
+    function toggleGoal(index) {
+      data.goals[index].completed = !data.goals[index].completed;
+      if (data.goals[index].completed) {
+        data.stats.totalGoals++;
+        data.xp += 25;
+        showPopup("Goal completed! +25 XP 🎉");
+        checkBadges();
+        updateProgress();
+      } else {
+        data.stats.totalGoals = Math.max(0, data.stats.totalGoals - 1);
+      }
+      renderGoals();
+      updateStats();
+      saveData();
+    }
+
+    function deleteGoal(index) {
+      if (confirm("Delete this goal?")) {
+        if (data.goals[index].completed) {
+          data.stats.totalGoals = Math.max(0, data.stats.totalGoals - 1);
+        }
+        data.goals.splice(index, 1);
+        renderGoals();
+        updateStats();
+        saveData();
+      }
+    }
+
+    function renderGoals() {
+      const div = document.getElementById("goalsList");
+      div.innerHTML = "";
+      
+      if (data.goals.length === 0) {
+        div.innerHTML = "<p style='margin-top: 15px; color: #64748b;'>No goals set yet. Add one above!</p>";
+        return;
+      }
+      
+      data.goals.forEach((goal, i) => {
+        const el = document.createElement("div");
+        el.className = goal.completed ? "goal-item completed" : "goal-item";
+        el.innerHTML = `
+          <div onclick="toggleGoal(${i})" style="cursor: pointer; flex: 1;">${goal.text}</div>
+          <div>
+            <button onclick="toggleGoal(${i})">${goal.completed ? '↩️' : '✅'}</button>
+            <button class="btn-danger" onclick="deleteGoal(${i})">🗑️</button>
+          </div>
+        `;
+        div.appendChild(el);
+      });
+    }
+
+    function selectMood(emoji, mood) {
+      document.querySelectorAll(".mood-btn").forEach(btn => btn.classList.remove("selected"));
+      event.target.classList.add("selected");
+      
+      const today = new Date().toDateString();
+      data.mood[today] = mood;
+      
+      const affirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
+      document.getElementById("affirmation").textContent = `${emoji} ${affirmation}`;
+      
+      data.xp += 5;
+      updateProgress();
+      saveData();
+      showPopup("Daily check-in complete! +5 XP 😊");
+    }
+
+    function updateStats() {
+      document.getElementById("totalChallenges").textContent = data.stats.totalChallenges;
+      document.getElementById("totalJournals").textContent = data.stats.totalJournals;
+      document.getElementById("totalGoals").textContent = data.stats.totalGoals;
+      document.getElementById("daysActive").textContent = data.stats.daysActive;
+      document.getElementById("streak").textContent = data.streak;
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+      
+      event.target.classList.add("active");
+      document.getElementById(tabName).classList.add("active");
+      
+      if (tabName === "completed") {
+        loadCompletedChallenges();
+      }
+    }
+
+    function resetProgress() {
+      if (confirm("Are you sure you want to reset ALL progress? This cannot be undone!")) {
+        if (confirm("Really? This will delete everything!")) {
+          localStorage.removeItem("confidenceBoosterData");
+          location.reload();
+        }
+      }
+    }
+
+    function init() {
+      loadData();
+      loadChallenges();
+      loadCompletedChallenges();
+      renderJournal();
+      renderGoals();
+      renderBadges();
+      newTip();
+      updateProgress();
+      updateStats();
+      
+      const affirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
+      document.getElementById("affirmation").textContent = affirmation;
+      
+      const today = new Date().toDateString();
+      if (data.mood[today]) {
+        const moodBtns = document.querySelectorAll(".mood-btn");
+        moodBtns.forEach(btn => {
+          if (btn.dataset.mood === data.mood[today]) {
+            btn.classList.add("selected");
+          }
+        });
+      }
+    }
+    
+    init();
+  </script>
+</body>
+</html>
